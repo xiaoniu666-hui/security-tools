@@ -213,6 +213,44 @@ const initDatabase = async () => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `)
 
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS rate_limit_config (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        endpoint VARCHAR(255) NOT NULL,
+        max_requests INT DEFAULT 100,
+        window_seconds INT DEFAULT 900,
+        enabled BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_endpoint (endpoint)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `)
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS blocked_countries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        country_code CHAR(2) NOT NULL,
+        reason TEXT,
+        active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_country_code (country_code),
+        INDEX idx_active (active)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `)
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS anomaly_detections (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        ip_address VARCHAR(45) NOT NULL,
+        anomaly_types JSON,
+        score DECIMAL(5,2) DEFAULT 0,
+        details JSON,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_ip_address (ip_address),
+        INDEX idx_score (score)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `)
+
     const [adminExists] = await pool.execute('SELECT id FROM users WHERE username = ?', ['admin'])
     if (adminExists.length === 0) {
       const bcrypt = require('bcrypt')
@@ -251,9 +289,15 @@ const insert = async (table, data) => {
     throw new Error('数据库连接未初始化')
   }
   try {
-    const columns = Object.keys(data)
+    const cleanedData = {}
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) {
+        cleanedData[key] = value
+      }
+    }
+    const columns = Object.keys(cleanedData)
     const placeholders = columns.map(() => '?')
-    const values = Object.values(data)
+    const values = Object.values(cleanedData)
     const sql = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')})`
     const [result] = await pool.execute(sql, values)
     return result
@@ -268,9 +312,21 @@ const update = async (table, data, where) => {
     throw new Error('数据库连接未初始化')
   }
   try {
-    const setClause = Object.keys(data).map(key => `${key} = ?`).join(', ')
-    const whereClause = Object.keys(where).map(key => `${key} = ?`).join(' AND ')
-    const values = [...Object.values(data), ...Object.values(where)]
+    const cleanedData = {}
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) {
+        cleanedData[key] = value
+      }
+    }
+    const cleanedWhere = {}
+    for (const [key, value] of Object.entries(where)) {
+      if (value !== undefined) {
+        cleanedWhere[key] = value
+      }
+    }
+    const setClause = Object.keys(cleanedData).map(key => `${key} = ?`).join(', ')
+    const whereClause = Object.keys(cleanedWhere).map(key => `${key} = ?`).join(' AND ')
+    const values = [...Object.values(cleanedData), ...Object.values(cleanedWhere)]
     const sql = `UPDATE ${table} SET ${setClause} WHERE ${whereClause}`
     const [result] = await pool.execute(sql, values)
     return result

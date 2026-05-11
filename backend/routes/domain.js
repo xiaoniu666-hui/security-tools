@@ -14,12 +14,21 @@ const mockDomainData = {
   '1.1.1.1': ['one.one.one.one']
 }
 
+const cleanDomain = (domainStr) => {
+  let clean = domainStr.trim()
+  clean = clean.replace(/^(https?:\/\/)?(www\.)?/, '')
+  clean = clean.replace(/\/.*$/, '')
+  return clean
+}
+
 router.get('/lookup', async (req, res) => {
-  const { domain, type = 'A' } = req.query
+  let { domain, type = 'A' } = req.query
   
   if (!domain) {
     return res.status(400).json({ error: '请提供域名' })
   }
+  
+  domain = cleanDomain(domain)
   
   try {
     let ipAddresses = []

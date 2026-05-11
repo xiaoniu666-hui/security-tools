@@ -75,15 +75,16 @@ const generateTokens = async (userId, username, role, ipAddress, userAgent) => {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
   }
 
-  await db.insert('user_sessions', {
+  const sessionData = {
     user_id: userId,
     token: accessToken,
     refresh_token: refreshToken,
     expires_at: formatDate(expiresAt),
-    refresh_expires_at: formatDate(refreshExpiresAt),
-    ip_address: ipAddress,
-    user_agent: userAgent
-  })
+    refresh_expires_at: formatDate(refreshExpiresAt)
+  }
+  if (ipAddress) sessionData.ip_address = ipAddress
+  if (userAgent) sessionData.user_agent = userAgent
+  await db.insert('user_sessions', sessionData)
 
   return {
     accessToken,

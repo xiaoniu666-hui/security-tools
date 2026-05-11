@@ -66,9 +66,22 @@ const formattedResult = computed(() => {
   return ''
 })
 
+const cleanDomain = (domainStr) => {
+  let clean = domainStr.trim()
+  clean = clean.replace(/^(https?:\/\/)?(www\.)?/, '')
+  clean = clean.replace(/\/.*$/, '')
+  return clean
+}
+
 const lookupDomain = async () => {
   if (!domain.value) {
     alert('请输入域名')
+    return
+  }
+  
+  const cleanedDomain = cleanDomain(domain.value)
+  if (!cleanedDomain) {
+    alert('请输入有效的域名')
     return
   }
   
@@ -77,7 +90,7 @@ const lookupDomain = async () => {
   
   try {
     const response = await axios.get('/api/domain/lookup', {
-      params: { domain: domain.value, type: recordType.value }
+      params: { domain: cleanedDomain, type: recordType.value }
     })
     result.value = response.data
     

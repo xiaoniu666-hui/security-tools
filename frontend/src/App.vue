@@ -109,6 +109,13 @@
           <SecurityEvents v-if="activeTab === 'securityEvents'" />
           <SSLCertificates v-if="activeTab === 'sslCertificates'" />
           <IntrusionDetection v-if="activeTab === 'intrusionDetection'" />
+          <RateLimitConfig v-if="activeTab === 'rateLimit'" />
+          <GeoBlocking v-if="activeTab === 'geoBlocking'" />
+          <AnomalyDetection v-if="activeTab === 'anomalyDetection'" />
+          <InputValidation v-if="activeTab === 'inputValidation'" />
+          <FileSecurity v-if="activeTab === 'fileSecurity'" />
+          <SecurityHeaders v-if="activeTab === 'securityHeaders'" />
+          <ThreatIntel v-if="activeTab === 'threatIntel'" />
           <DomainLookup v-if="activeTab === 'domainLookup'" />
           <VPNAnalysis v-if="activeTab === 'vpnAnalysis'" />
           <AIQA v-if="activeTab === 'aiQA'" />
@@ -140,6 +147,13 @@ import WAFRules from './components/WAFRules.vue'
 import SecurityEvents from './components/SecurityEvents.vue'
 import SSLCertificates from './components/SSLCertificates.vue'
 import IntrusionDetection from './components/IntrusionDetection.vue'
+import RateLimitConfig from './components/RateLimitConfig.vue'
+import GeoBlocking from './components/GeoBlocking.vue'
+import AnomalyDetection from './components/AnomalyDetection.vue'
+import InputValidation from './components/InputValidation.vue'
+import FileSecurity from './components/FileSecurity.vue'
+import SecurityHeaders from './components/SecurityHeaders.vue'
+import ThreatIntel from './components/ThreatIntel.vue'
 import DomainLookup from './components/DomainLookup.vue'
 import VPNAnalysis from './components/VPNAnalysis.vue'
 import AIQA from './components/AIQA.vue'
@@ -166,7 +180,14 @@ const defenseTabs = [
   { id: 'wafRules', name: 'WAF规则配置' },
   { id: 'securityEvents', name: '安全事件监控' },
   { id: 'sslCertificates', name: 'SSL证书管理' },
-  { id: 'intrusionDetection', name: '入侵检测系统' }
+  { id: 'intrusionDetection', name: '入侵检测系统' },
+  { id: 'rateLimit', name: '速率限制配置' },
+  { id: 'geoBlocking', name: 'IP地理定位阻止' },
+  { id: 'anomalyDetection', name: '异常行为检测' },
+  { id: 'inputValidation', name: '输入验证检测' },
+  { id: 'fileSecurity', name: '文件上传安全' },
+  { id: 'securityHeaders', name: '安全头配置' },
+  { id: 'threatIntel', name: '威胁情报查询' }
 ]
 
 const toolTabs = [

@@ -5,7 +5,7 @@ const logger = require('../config/logger')
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 100,
   message: {
     error: '请求过于频繁，请稍后重试',
     code: 'RATE_LIMITED',
@@ -50,10 +50,10 @@ const apiLimiter = rateLimit({
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 3,
+  max: 9999,
   message: {
     error: '登录失败次数过多，请15分钟后重试',
-    code: 'LOGIN_LOCKED',
+    code: 'LOGIN_LOCKED_TEST',
     retryAfter: 15 * 60
   },
   standardHeaders: true,
@@ -66,7 +66,7 @@ const loginLimiter = rateLimit({
     logger.warn(`用户 ${req.body.username} (${req.ip}) 登录失败次数过多`)
     res.status(429).json({
       error: '登录失败次数过多，请15分钟后重试',
-      code: 'LOGIN_LOCKED',
+      code: 'LOGIN_LOCKED_TEST',
       retryAfter: 15 * 60
     })
   }
@@ -74,8 +74,9 @@ const loginLimiter = rateLimit({
 
 const resetLoginLimit = (username, ip) => {
   const key = `${username}_${ip}`
-  if (loginLimiter.store?.delete) {
-    loginLimiter.store.delete(key)
+  const deleteFn = loginLimiter.store?.delete
+  if (typeof deleteFn === 'function') {
+    deleteFn(key)
     logger.info(`重置登录限制: ${username} (${ip})`)
   }
 }

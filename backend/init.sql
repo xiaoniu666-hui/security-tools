@@ -333,10 +333,49 @@ CREATE TABLE IF NOT EXISTS user_sessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   token VARCHAR(255) NOT NULL,
+  refresh_token VARCHAR(255),
   expires_at DATETIME NOT NULL,
+  refresh_expires_at DATETIME,
+  ip_address VARCHAR(45),
+  user_agent TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  INDEX idx_token (token)
+  INDEX idx_token (token),
+  INDEX idx_refresh_token (refresh_token)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS rate_limit_config (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  endpoint VARCHAR(200) NOT NULL,
+  max_requests INT DEFAULT 100,
+  window_seconds INT DEFAULT 60,
+  enabled TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY idx_endpoint (endpoint),
+  INDEX idx_enabled (enabled)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS blocked_countries (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  country_code VARCHAR(2) NOT NULL,
+  reason VARCHAR(200),
+  active TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY idx_country_code (country_code),
+  INDEX idx_active (active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS anomaly_detections (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ip_address VARCHAR(45) NOT NULL,
+  anomaly_types TEXT,
+  score DECIMAL(5, 2) DEFAULT 0.00,
+  details TEXT,
+  detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_ip_address (ip_address),
+  INDEX idx_detected_at (detected_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO users (username, email, password, role) VALUES

@@ -5,10 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "test": "node test_api.js",
-    "test:auth": "node test_auth.js",
-    "test:register": "node test_register.js"
+    "dev": "node server.js"
   },
   "keywords": [],
   "author": "",

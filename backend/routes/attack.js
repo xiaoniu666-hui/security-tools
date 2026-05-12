@@ -176,7 +176,7 @@ router.post('/path-traversal', async (req, res) => {
     resolved_path: resolvedPath,
     traversal_depth: depth,
     has_traversal_attempt: hasTraversal,
-    escape_basedir,
+    escape_basedir: escapeBasedir,
     is_vulnerable: hasTraversal || escapeBasedir,
     recommendations: [
       '对用户输入的路径进行规范化处理',

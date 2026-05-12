@@ -97,6 +97,7 @@
           <Crawler v-if="activeTab === 'crawler'" />
           <DataCleaning v-if="activeTab === 'dataCleaning'" />
           <VulnScan v-if="activeTab === 'vulnScan'" />
+          <VulnerabilityScanner v-if="activeTab === 'vulnerabilityScanner'" />
           <XSSUpload v-if="activeTab === 'xssUpload'" />
           <CSRFTest v-if="activeTab === 'csrfTest'" />
           <CommandInjection v-if="activeTab === 'commandInjection'" />
@@ -135,6 +136,7 @@ import VirtualIP from './components/VirtualIP.vue'
 import Crawler from './components/Crawler.vue'
 import DataCleaning from './components/DataCleaning.vue'
 import VulnScan from './components/VulnScan.vue'
+import VulnerabilityScanner from './components/VulnerabilityScanner.vue'
 import XSSUpload from './components/XSSUpload.vue'
 import PasswordCrack from './components/PasswordCrack.vue'
 import SQLInject from './components/SQLInject.vue'
@@ -171,6 +173,7 @@ const attackTabs = [
   { id: 'pathTraversal', name: '路径遍历测试' },
   { id: 'ssrfTest', name: 'SSRF测试' },
   { id: 'sqlInject', name: 'SQL注入测试' },
+  { id: 'vulnerabilityScanner', name: '综合漏洞扫描' },
   { id: 'passwordCrack', name: '弱密码爆破' },
   { id: 'crawler', name: '信息收集爬虫' }
 ]

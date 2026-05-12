@@ -82,13 +82,20 @@ const crawl = async (url, depth, maxDepth, baseUrl = null) => {
 
   visited.add(url)
 
-  if (!baseUrl) {
-    baseUrl = new URL(url).origin
+  let originBaseUrl = baseUrl
+  if (!originBaseUrl) {
+    try {
+      originBaseUrl = new URL(url).origin
+    } catch (e) {
+      console.error(`[CRAWLER] URL解析失败: ${url}, 错误: ${e.message}`)
+      return [{ url, error: `URL解析失败: ${e.message}`, timestamp: new Date().toISOString() }]
+    }
   }
 
   await sleep(1000, 3000)
 
   try {
+    console.log(`[CRAWLER] 正在请求: ${url}`)
     const response = await axios.get(url, {
       headers: {
         'User-Agent': getRandomUserAgent(),
@@ -175,10 +182,23 @@ router.post('/start', async (req, res) => {
     return res.status(400).json({ error: '爬取深度必须在1-5之间' })
   }
 
+  let targetUrl = url
+  if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+    targetUrl = 'https://' + targetUrl
+  }
+
+  try {
+    new URL(targetUrl)
+  } catch (e) {
+    return res.status(400).json({ error: '无效的URL格式', details: e.message })
+  }
+
   visited.clear()
 
   try {
-    const results = await crawl(url, 1, depth)
+    console.log(`[CRAWLER] 开始爬取: ${targetUrl}, 深度: ${depth}`)
+    const results = await crawl(targetUrl, 1, depth)
+    console.log(`[CRAWLER] 爬取完成: ${results.length} 个页面`)
     res.json({
       success: true,
       totalPages: results.length,
@@ -188,9 +208,12 @@ router.post('/start', async (req, res) => {
       timestamp: new Date().toISOString()
     })
   } catch (error) {
+    console.error(`[CRAWLER] 爬取错误: ${error.message}`)
+    console.error(`[CRAWLER] 错误堆栈: ${error.stack}`)
     res.status(500).json({ 
       error: '爬取失败', 
       details: error.message,
+      stack: error.stack,
       timestamp: new Date().toISOString()
     })
   }

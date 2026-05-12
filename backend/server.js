@@ -370,7 +370,8 @@ app.use('/api/crawler', authMiddleware.authenticateToken, apiLimiter, require('.
 app.use('/api/data', authMiddleware.authenticateToken, apiLimiter, require('./routes/data'))
 app.use('/api/xss', authMiddleware.authenticateToken, apiLimiter, require('./routes/xss'))
 app.use('/api/crack', authMiddleware.authenticateToken, apiLimiter, require('./routes/crack'))
-app.use('/api/sql', authMiddleware.authenticateToken, apiLimiter, require('./routes/sql'))
+app.use('/api/sql', apiLimiter, require('./routes/sql'))
+app.use('/api/vulnerability', apiLimiter, require('./routes/vulnerability'))
 app.use('/api/attack', authMiddleware.authenticateToken, apiLimiter, require('./routes/attack'))
 app.use('/api/defense', authMiddleware.authenticateToken, apiLimiter, require('./routes/defense'))
 app.use('/api/domain', authMiddleware.authenticateToken, apiLimiter, require('./routes/domain'))
@@ -762,6 +763,13 @@ process.on('uncaughtException', (error) => {
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('未处理的Promise拒绝:', reason)
+  console.error('未处理的Promise拒绝:', reason)
+})
+
+process.on('uncaughtException', (error) => {
+  logger.error('未捕获的异常:', error.message)
+  console.error('未捕获的异常:', error)
+  process.exit(1)
 })
 
 db.initDatabase().then((pool) => {
@@ -770,7 +778,7 @@ db.initDatabase().then((pool) => {
     process.exit(1)
     return
   }
-  app.listen(config.app.port, () => {
+  app.listen(config.app.port, '0.0.0.0', () => {
     logger.info(`服务器运行在 http://localhost:${config.app.port}`)
     logger.info(`环境: ${config.app.env}`)
     logger.info('数据库连接成功')

@@ -23,7 +23,7 @@ router.post('/password', async (req, res) => {
       }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         },
         timeout: 5000,
         maxRedirects: 0,
@@ -46,6 +46,38 @@ router.post('/password', async (req, res) => {
     password: foundPassword,
     triedCount: tried.length,
     triedPasswords: tried.slice(0, 20)
+  })
+})
+
+router.post('/test', async (req, res) => {
+  const { password } = req.body
+  
+  if (!password) {
+    return res.status(400).json({ error: '请提供密码' })
+  }
+  
+  const weakPasswords = ['123456', 'password', '123456789', 'qwerty', 'abc123', '111111', '123123']
+  const isWeak = weakPasswords.includes(password.toLowerCase())
+  
+  const score = isWeak ? Math.floor(Math.random() * 20) + 10 : Math.floor(Math.random() * 60) + 40
+  const strength = score < 30 ? '弱' : score < 60 ? '中等' : '强'
+  
+  res.json({
+    success: true,
+    password,
+    is_weak: isWeak,
+    strength_score: score,
+    strength,
+    recommendations: isWeak ? [
+      '使用至少8个字符的密码',
+      '混合大小写字母',
+      '添加数字和特殊字符',
+      '避免使用常见密码'
+    ] : [
+      '保持密码复杂性',
+      '定期更换密码',
+      '使用密码管理器'
+    ]
   })
 })
 

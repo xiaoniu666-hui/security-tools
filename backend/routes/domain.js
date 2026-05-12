@@ -68,6 +68,53 @@ router.get('/lookup', async (req, res) => {
   }
 })
 
+router.post('/lookup', async (req, res) => {
+  let { domain, type = 'A' } = req.body
+  
+  if (!domain) {
+    return res.status(400).json({ error: '请提供域名' })
+  }
+  
+  domain = cleanDomain(domain)
+  
+  try {
+    let ipAddresses = []
+    
+    if (mockDomainData[domain]) {
+      ipAddresses = mockDomainData[domain]
+    } else {
+      try {
+        const result = await dns.resolve(domain, type)
+        ipAddresses = Array.isArray(result) ? result : [result]
+      } catch (dnsError) {
+        ipAddresses = [`模拟IP-${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`]
+        console.warn(`DNS解析失败，使用模拟数据: ${dnsError.message}`)
+      }
+    }
+    
+    await insert('domain_records', {
+      domain,
+      ip_address: ipAddresses[0] || null,
+      ip_addresses: JSON.stringify(ipAddresses),
+      record_type: type.toUpperCase()
+    })
+    
+    res.json({
+      success: true,
+      domain,
+      record_type: type.toUpperCase(),
+      ip_addresses: ipAddresses,
+      count: ipAddresses.length
+    })
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: '域名解析失败', 
+      details: error.message 
+    })
+  }
+})
+
 router.get('/history', async (req, res) => {
   try {
     const result = await query('SELECT * FROM domain_records ORDER BY created_at DESC LIMIT 20')

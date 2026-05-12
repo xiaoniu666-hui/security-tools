@@ -176,4 +176,26 @@ router.get('/analyze', async (req, res) => {
   res.json({ success: true, analysis })
 })
 
+router.post('/analyze', async (req, res) => {
+  const { ip } = req.body
+  
+  if (!ip) {
+    return res.status(400).json({ error: '请提供IP地址' })
+  }
+  
+  const analysis = {
+    ip,
+    is_vpn: Math.random() > 0.6,
+    is_proxy: Math.random() > 0.5,
+    is_tor: Math.random() > 0.8,
+    reputation: Math.floor(Math.random() * 50) + 50,
+    country: ['United States', 'China', 'Germany', 'Japan', 'United Kingdom'][Math.floor(Math.random() * 5)],
+    risk_level: Math.random() > 0.7 ? 'high' : Math.random() > 0.5 ? 'medium' : 'low',
+    suspicious_ports: [22, 80, 443, 8080].filter(() => Math.random() > 0.5),
+    last_seen: new Date(Date.now() - Math.random() * 86400000).toISOString()
+  }
+  
+  res.json({ success: true, analysis })
+})
+
 module.exports = router

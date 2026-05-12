@@ -550,4 +550,32 @@ router.post('/threat/intel', async (req, res) => {
   })
 })
 
+router.get('/waf-rules', async (req, res) => {
+  try {
+    const result = await query('SELECT * FROM waf_rules ORDER BY id ASC')
+    res.json({ success: true, data: result })
+  } catch (error) {
+    res.status(500).json({ error: '获取WAF规则失败', details: error.message })
+  }
+})
+
+router.get('/security-events', async (req, res) => {
+  const { level, limit = 50 } = req.query
+  
+  try {
+    let sql = 'SELECT * FROM security_events ORDER BY timestamp DESC LIMIT ?'
+    const params = [limit]
+    
+    if (level) {
+      sql = 'SELECT * FROM security_events WHERE level = ? ORDER BY timestamp DESC LIMIT ?'
+      params.unshift(level)
+    }
+    
+    const result = await query(sql, params)
+    res.json({ success: true, data: result })
+  } catch (error) {
+    res.status(500).json({ error: '获取安全事件失败', details: error.message })
+  }
+})
+
 module.exports = router

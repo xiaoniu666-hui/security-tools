@@ -493,8 +493,7 @@ body {
   flex-wrap: wrap;
 }
 
-.form-group input,
-.form-group select {
+.form-group input {
   padding: 12px 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
@@ -503,6 +502,18 @@ body {
   font-size: 14px;
   flex: 1;
   min-width: 200px;
+}
+
+.form-group select {
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  font-size: 14px;
+  flex: 1;
+  min-width: 200px;
+  cursor: pointer;
 }
 
 .form-group input::placeholder {

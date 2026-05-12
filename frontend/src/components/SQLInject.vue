@@ -24,6 +24,10 @@
       <select id="method" v-model="method">
         <option value="GET">GET</option>
         <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="DELETE">DELETE</option>
+        <option value="PATCH">PATCH</option>
+        <option value="OPTIONS">OPTIONS</option>
       </select>
     </div>
     <button class="btn btn-primary" @click="testSQL" :disabled="loading">

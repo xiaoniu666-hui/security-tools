@@ -349,14 +349,47 @@ const testPayload = async (instance, url, parameter, method, payload, payloadTyp
   
   try {
     let response
+    const testPayload = encodeURIComponent(payload)
     
-    if (method === 'GET') {
-      const separator = url.includes('?') ? '&' : '?'
-      const testUrl = `${url}${separator}${parameter}=${encodeURIComponent(payload)}`
-      response = await instance.get(testUrl)
-    } else {
-      const data = { [parameter]: payload }
-      response = await instance.post(url, data)
+    switch (method.toUpperCase()) {
+      case 'GET': {
+        const separator = url.includes('?') ? '&' : '?'
+        const testUrl = `${url}${separator}${parameter}=${testPayload}`
+        response = await instance.get(testUrl)
+        break
+      }
+      case 'POST': {
+        const data = { [parameter]: payload }
+        response = await instance.post(url, data)
+        break
+      }
+      case 'PUT': {
+        const data = { [parameter]: payload }
+        response = await instance.put(url, data)
+        break
+      }
+      case 'DELETE': {
+        const separator = url.includes('?') ? '&' : '?'
+        const testUrl = `${url}${separator}${parameter}=${testPayload}`
+        response = await instance.delete(testUrl)
+        break
+      }
+      case 'PATCH': {
+        const data = { [parameter]: payload }
+        response = await instance.patch(url, data)
+        break
+      }
+      case 'OPTIONS': {
+        const separator = url.includes('?') ? '&' : '?'
+        const testUrl = `${url}${separator}${parameter}=${testPayload}`
+        response = await instance.options(testUrl)
+        break
+      }
+      default: {
+        const separator = url.includes('?') ? '&' : '?'
+        const testUrl = `${url}${separator}${parameter}=${testPayload}`
+        response = await instance.get(testUrl)
+      }
     }
     
     const responseTime = Date.now() - startTime
@@ -366,6 +399,7 @@ const testPayload = async (instance, url, parameter, method, payload, payloadTyp
     return {
       payload,
       type: payloadType,
+      method: method.toUpperCase(),
       status: response.status,
       responseTime,
       timeDelay: analysis.timeDelay,
@@ -376,6 +410,7 @@ const testPayload = async (instance, url, parameter, method, payload, payloadTyp
     return {
       payload,
       type: payloadType,
+      method: method.toUpperCase(),
       status: error.response?.status || 0,
       responseTime,
       timeDelay: responseTime - baseResponseTime,
@@ -391,12 +426,40 @@ const testPayload = async (instance, url, parameter, method, payload, payloadTyp
 const getBaseResponseTime = async (instance, url, parameter, method) => {
   try {
     const startTime = Date.now()
+    const testValue = 'test123'
     
-    if (method === 'GET') {
-      const separator = url.includes('?') ? '&' : '?'
-      await instance.get(`${url}${separator}${parameter}=test123`)
-    } else {
-      await instance.post(url, { [parameter]: 'test123' })
+    switch (method.toUpperCase()) {
+      case 'GET': {
+        const separator = url.includes('?') ? '&' : '?'
+        await instance.get(`${url}${separator}${parameter}=${testValue}`)
+        break
+      }
+      case 'POST': {
+        await instance.post(url, { [parameter]: testValue })
+        break
+      }
+      case 'PUT': {
+        await instance.put(url, { [parameter]: testValue })
+        break
+      }
+      case 'DELETE': {
+        const separator = url.includes('?') ? '&' : '?'
+        await instance.delete(`${url}${separator}${parameter}=${testValue}`)
+        break
+      }
+      case 'PATCH': {
+        await instance.patch(url, { [parameter]: testValue })
+        break
+      }
+      case 'OPTIONS': {
+        const separator = url.includes('?') ? '&' : '?'
+        await instance.options(`${url}${separator}${parameter}=${testValue}`)
+        break
+      }
+      default: {
+        const separator = url.includes('?') ? '&' : '?'
+        await instance.get(`${url}${separator}${parameter}=${testValue}`)
+      }
     }
     
     return Date.now() - startTime

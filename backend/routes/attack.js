@@ -9,7 +9,11 @@ router.post('/csrf-test', async (req, res) => {
   }
 
   try {
-    const parsedUrl = new URL(url)
+    let targetUrl = url.trim()
+    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+      targetUrl = 'https://' + targetUrl
+    }
+    const parsedUrl = new URL(targetUrl)
     
     const vulnerabilities = []
     const checks = []
@@ -195,7 +199,11 @@ router.post('/ssrf-test', async (req, res) => {
   }
 
   try {
-    const parsedUrl = new URL(url)
+    let targetUrl = url.trim()
+    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://') && !targetUrl.startsWith('file://')) {
+      targetUrl = 'https://' + targetUrl
+    }
+    const parsedUrl = new URL(targetUrl)
     const accessibleResources = []
     const blockedResources = []
 

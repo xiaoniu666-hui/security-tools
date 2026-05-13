@@ -53,7 +53,7 @@ const loadBlacklist = async () => {
 
 const addBlacklist = async () => {
   if (!newIP.value) return
-  await axios.post('/api/defense/blacklist/add', { ip: newIP.value, severity, reason: '手动添加' })
+  await axios.post('/api/defense/blacklist/add', { ip: newIP.value, severity: severity.value, reason: '手动添加' })
   newIP.value = ''
   await loadBlacklist()
 }

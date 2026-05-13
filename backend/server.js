@@ -405,7 +405,7 @@ app.get('/api/vuln/info', (req, res) => {
 })
 
 app.post('/api/vuln/scan', authMiddleware.authenticateToken, apiLimiter, async (req, res) => {
-  const { url, scanTypes = ['headers', 'ssl'] } = req.body
+  const { url, method = 'GET', scanTypes = ['headers', 'ssl'] } = req.body
 
   if (!url) {
     return res.status(400).json({
@@ -432,6 +432,7 @@ app.post('/api/vuln/scan', authMiddleware.authenticateToken, apiLimiter, async (
   const results = {
     target: url,
     hostname: hostname,
+    method: method.toUpperCase(),
     scanTime: new Date().toISOString(),
     scanTypes: scanTypes,
     summary: {
@@ -455,7 +456,15 @@ app.post('/api/vuln/scan', authMiddleware.authenticateToken, apiLimiter, async (
   try {
     if (scanTypes.includes('headers')) {
       try {
-        const response = await axios.get(url, { timeout: 15000, validateStatus: () => true })
+        const supportedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD', 'TRACE']
+        const reqMethod = supportedMethods.includes(method.toUpperCase()) ? method.toUpperCase() : 'GET'
+        
+        const response = await axios({
+          method: reqMethod,
+          url: url,
+          timeout: 15000,
+          validateStatus: () => true
+        })
         const headers = response.headers
 
         const headerChecks = [

@@ -12,6 +12,20 @@
       />
     </div>
 
+    <div class="form-group">
+      <label for="method">请求方法</label>
+      <select id="method" v-model="method">
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="DELETE">DELETE</option>
+        <option value="PATCH">PATCH</option>
+        <option value="OPTIONS">OPTIONS</option>
+        <option value="HEAD">HEAD</option>
+        <option value="TRACE">TRACE</option>
+      </select>
+    </div>
+
     <div class="scan-options">
       <label class="checkbox-label">
         <input type="checkbox" v-model="scanOptions.headers" />
@@ -120,6 +134,7 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 
 const targetUrl = ref('')
+const method = ref('GET')
 const loading = ref(false)
 const results = ref(null)
 
@@ -170,6 +185,7 @@ const startScan = async () => {
   try {
     const response = await axios.post('/api/vuln/scan', {
       url: targetUrl.value,
+      method: method.value,
       scanTypes: selectedScans
     })
     results.value = response.data

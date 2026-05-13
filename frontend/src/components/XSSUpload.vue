@@ -62,9 +62,14 @@ const testXSS = async () => {
   loading.value = true
   isVulnerable.value = false
 
+  let targetUrl = xssUrl.value.trim()
+  if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+    targetUrl = 'https://' + targetUrl
+  }
+
   try {
     const response = await axios.post('/api/xss/test', {
-      url: xssUrl.value,
+      url: targetUrl,
       payload: xssPayload.value
     })
     result.value = response.data

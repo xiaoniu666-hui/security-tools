@@ -400,7 +400,7 @@ app.get('/api/vuln/info', (req, res) => {
   res.json({
     supportedScans: ['headers', 'ports', 'ssl', 'subdomain', 'cve'],
     vulnerabilityTypes: Object.keys(vulnerabilitySolutions),
-    version: '2.0.0'
+    version: '2.4.0'
   })
 })
 
@@ -715,14 +715,14 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: '2.0.0',
+    version: '2.4.0',
     uptime: process.uptime()
   })
 })
 
 app.get('/api/version', (req, res) => {
   res.json({
-    version: '2.0.0',
+    version: '2.4.0',
     name: config.app.name,
     environment: config.app.env
   })
@@ -731,7 +731,7 @@ app.get('/api/version', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: '网络安全工具集API',
-    version: '2.0.0',
+    version: '2.4.0',
     endpoints: [
       '/api/auth/register',
       '/api/auth/login',

@@ -96,7 +96,7 @@
           <VirtualIP v-if="activeTab === 'virtualIp'" />
           <Crawler v-if="activeTab === 'crawler'" />
           <DataCleaning v-if="activeTab === 'dataCleaning'" />
-          <VulnScan v-if="activeTab === 'vulnScan'" />
+          
           <VulnerabilityScanner v-if="activeTab === 'vulnerabilityScanner'" />
           <XSSUpload v-if="activeTab === 'xssUpload'" />
           <CSRFTest v-if="activeTab === 'csrfTest'" />
@@ -135,7 +135,7 @@ import IPQuery from './components/IPQuery.vue'
 import VirtualIP from './components/VirtualIP.vue'
 import Crawler from './components/Crawler.vue'
 import DataCleaning from './components/DataCleaning.vue'
-import VulnScan from './components/VulnScan.vue'
+
 import VulnerabilityScanner from './components/VulnerabilityScanner.vue'
 import XSSUpload from './components/XSSUpload.vue'
 import PasswordCrack from './components/PasswordCrack.vue'
@@ -198,8 +198,7 @@ const toolTabs = [
   { id: 'domainLookup', name: '域名查询IP' },
   { id: 'virtualIp', name: '虚拟IP生成' },
   { id: 'vpnAnalysis', name: '虚拟IP破解' },
-  { id: 'dataCleaning', name: '数据清洗处理' },
-  { id: 'vulnScan', name: '漏洞扫描' }
+  { id: 'dataCleaning', name: '数据清洗处理' }
 ]
 
 const handleLogin = (user) => {

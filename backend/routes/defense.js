@@ -200,7 +200,7 @@ router.post('/detect/intrusion', async (req, res) => {
 router.get('/statistics', async (req, res) => {
   try {
     const [events, blacklist, waf, ssl] = await Promise.all([
-      query('SELECT severity, COUNT(*) as count FROM security_events GROUP BY severity'),
+      query('SELECT level, COUNT(*) as count FROM security_events GROUP BY level'),
       query('SELECT severity, COUNT(*) as count FROM blacklisted_ips WHERE active = true GROUP BY severity'),
       query('SELECT action, COUNT(*) as count FROM waf_rules WHERE active = true GROUP BY action'),
       query('SELECT status, COUNT(*) as count FROM ssl_certificates GROUP BY status')

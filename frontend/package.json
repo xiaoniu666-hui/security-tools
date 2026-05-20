@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.0.0",
+  "version": "2.4.0",
   "description": "网络安全Web项目前端",
   "type": "module",
   "scripts": {
